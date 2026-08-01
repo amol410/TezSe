@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
@@ -6,6 +7,7 @@ import beneficiaryRoutes from './routes/beneficiaries';
 import transactionRoutes from './routes/transactions';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -16,10 +18,6 @@ app.use('/api/cards', cardRoutes);
 app.use('/api/beneficiaries', beneficiaryRoutes);
 app.use('/api/transactions', transactionRoutes);
 
-// ❌ REMOVED: dotenv.config() — Vercel injects env vars automatically
-// ❌ REMOVED: express.static for legal pages — put files in /public at project root instead
-// ❌ REMOVED: app.listen() — Vercel handles this
-
 app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Welcome to the TezSend API' });
 });
@@ -28,5 +26,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'TezSend API is running' });
 });
 
-// ✅ REQUIRED: Export for Vercel serverless
+// ✅ Start server (required for Hostinger VPS / any traditional Node host)
+app.listen(PORT, () => {
+  console.log(`🚀 TezSend API running on port ${PORT}`);
+});
+
+// ✅ Also export for testing / serverless adapters
 export default app;
