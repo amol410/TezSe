@@ -2,11 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "npx tsx watch src/index.ts",
-    "build": "tsc && prisma generate",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "migrate": "prisma migrate deploy",
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,15 +26,8 @@
     "mysql2": "^3.22.6"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.1.0",
     "nodemon": "^3.1.14",
-    "prisma": "^5.22.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "prisma": "^5.22.0"
   },
   "overrides": {
     "uuid": "^11.0.0",

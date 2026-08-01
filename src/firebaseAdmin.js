@@ -1,28 +1,27 @@
-import {
+const {
   initializeApp,
   getApps,
   getApp,
   cert,
-  type App,
-} from 'firebase-admin/app';
-import path from 'path';
-import fs from 'fs';
+} = require('firebase-admin/app');
+const path = require('path');
+const fs = require('fs');
 
 // __dirname = /...backend/src, so go one level up to /backend
 const serviceAccountPath = path.resolve(__dirname, '..', 'tezsend-firebase-adminsdk.json');
 
-let firebaseApp: App;
+let firebaseApp;
 
-function initFirebaseAdmin(): App {
+function initFirebaseAdmin() {
   const existingApps = getApps();
 
-  // Guard against double-initialization during tsx hot-reload.
+  // Guard against double-initialization
   if (existingApps.length > 0) {
     console.log('Firebase Admin: reusing already-initialized app.');
     return getApp();
   }
 
-  let serviceAccount: object;
+  let serviceAccount;
 
   // 1) Prefer env var (production / CI / hosting without file access)
   if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
@@ -53,14 +52,13 @@ function initFirebaseAdmin(): App {
     );
   }
 
-  const app = initializeApp({ credential: cert(serviceAccount as any) });
+  const app = initializeApp({ credential: cert(serviceAccount) });
 
-  const projectId = (serviceAccount as any).project_id ?? 'unknown';
+  const projectId = serviceAccount.project_id ?? 'unknown';
   console.log(`Firebase Admin: initialized (project: ${projectId})`);
   return app;
 }
 
 firebaseApp = initFirebaseAdmin();
 
-export { firebaseApp };
-export default firebaseApp;
+module.exports = { firebaseApp };

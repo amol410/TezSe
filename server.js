@@ -1,10 +1,10 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import authRoutes from './routes/auth';
-import cardRoutes from './routes/cards';
-import beneficiaryRoutes from './routes/beneficiaries';
-import transactionRoutes from './routes/transactions';
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const authRoutes = require('./src/routes/auth');
+const cardRoutes = require('./src/routes/cards');
+const beneficiaryRoutes = require('./src/routes/beneficiaries');
+const transactionRoutes = require('./src/routes/transactions');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,5 +31,4 @@ app.listen(PORT, () => {
   console.log(`🚀 TezSend API running on port ${PORT}`);
 });
 
-// ✅ Also export for testing / serverless adapters
-export default app;
+module.exports = app;
