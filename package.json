@@ -7,6 +7,7 @@
     "start": "node dist/index.js",
     "dev": "npx tsx watch src/index.ts",
     "build": "tsc && prisma generate",
+    "migrate": "prisma migrate deploy",
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
