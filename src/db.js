@@ -6,7 +6,7 @@ let pool;
 try {
   const url = new URL(process.env.DATABASE_URL);
   pool = mysql.createPool({
-    host: url.hostname,
+    host: url.hostname === 'localhost' ? '127.0.0.1' : url.hostname,
     user: decodeURIComponent(url.username),
     password: decodeURIComponent(url.password),
     database: url.pathname.slice(1),
