@@ -123,6 +123,7 @@ router.post('/google', async (req, res) => {
 
 // ─── Firebase-backed Google sign-in (accepts Firebase ID token) ──────────────
 router.post('/firebase-google', async (req, res) => {
+  if (!firebaseApp) return res.status(503).json({ message: 'Firebase is not configured on this server' });
   const { idToken } = req.body;
 
   if (!idToken) {
@@ -157,6 +158,7 @@ router.post('/firebase-google', async (req, res) => {
 
 // ─── Firebase Phone Auth ──────────────────────────────────────────────────────
 router.post('/firebase-phone', async (req, res) => {
+  if (!firebaseApp) return res.status(503).json({ message: 'Firebase is not configured on this server' });
   const { idToken } = req.body;
 
   if (!idToken) {
@@ -249,6 +251,7 @@ router.get('/me', authenticate, async (req, res) => {
 
 // ─── Link phone to an existing account (post email/Google signup) ─────────────
 router.post('/link-phone', authenticate, async (req, res) => {
+  if (!firebaseApp) return res.status(503).json({ message: 'Firebase is not configured on this server' });
   const { idToken } = req.body;
 
   if (!idToken) {
