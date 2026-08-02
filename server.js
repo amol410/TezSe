@@ -19,7 +19,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 app.use(
   cors({
     origin: allowedOrigins.includes('*')
-      ? true
+      ? '*'
       : (origin, callback) => {
           // allow server-to-server requests (no Origin header)
           if (!origin || allowedOrigins.includes(origin)) {
