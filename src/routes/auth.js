@@ -86,14 +86,35 @@ router.post('/login', async (req, res) => {
 // ─── Google OAuth ─────────────────────────────────────────────────────────────
 router.post('/google', async (req, res) => {
   const { idToken } = req.body;
-  if (!idToken) return res.status(400).json({ message: 'Google ID token is required' });
+  if (!idToken) return res.status(400).json({ message: 'Google token is required' });
 
   try {
-    const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) return res.status(401).json({ message: 'Invalid Google token' });
+    let googleId, email, name, avatar;
 
-    const { sub: googleId, email, name, picture: avatar } = payload;
+    // @react-oauth/google sends an access_token, not an id_token
+    // Try fetching from Google userinfo endpoint first
+    const userinfoRes = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
+      headers: { Authorization: `Bearer ${idToken}` }
+    });
+
+    if (userinfoRes.ok) {
+      const userinfo = await userinfoRes.json();
+      googleId = userinfo.sub;
+      email = userinfo.email;
+      name = userinfo.name;
+      avatar = userinfo.picture;
+    } else {
+      // Fallback: try verifying as a standard Google ID Token
+      const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) return res.status(401).json({ message: 'Invalid Google token' });
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      avatar = payload.picture;
+    }
+
+    if (!email) return res.status(401).json({ message: 'Could not retrieve email from Google' });
 
     const [rows] = await db.query('SELECT * FROM User WHERE googleId = ? OR email = ? LIMIT 1', [googleId, email]);
     let user = rows[0];
@@ -124,6 +145,7 @@ router.post('/google', async (req, res) => {
     res.status(401).json({ message: 'Google authentication failed' });
   }
 });
+
 
 // ─── Firebase-backed Google sign-in ──────────────────────────────────────────
 router.post('/firebase-google', async (req, res) => {

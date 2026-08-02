@@ -45,6 +45,21 @@ router.post('/initiate', async (req, res) => {
   }
 });
 
+router.get('/summary', async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT SUM(totalAmount) as totalVolume 
+       FROM \`Transaction\` 
+       WHERE userId = ? AND (status = 'completed' OR status = 'COMPLETED')`,
+      [req.userId]
+    );
+    const totalVolume = rows[0].totalVolume || 0;
+    res.json({ totalVolume: Number(totalVolume) });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching summary', error: error.message });
+  }
+});
+
 router.get('/history', async (req, res) => {
   try {
     const [rows] = await db.query(
